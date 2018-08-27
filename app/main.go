@@ -267,6 +267,7 @@ func getCommands() []BotCommand {
 		pokedexCommand,
 		swallowCommand,
 		doitCommand,
+		youwontCommand,
 		repostCommand,
 		mockCommand,
 	}
