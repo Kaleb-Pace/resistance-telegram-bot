@@ -270,6 +270,7 @@ func getCommands() []BotCommand {
 		youwontCommand,
 		repostCommand,
 		mockCommand,
+		yeetCommand,
 	}
 
 }
