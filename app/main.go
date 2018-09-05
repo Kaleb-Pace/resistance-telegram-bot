@@ -24,7 +24,7 @@ import (
 
 func messageContainsCommandMatcher(command string) func(Update) bool {
 	return func(update Update) bool {
-		return messageContainsCommand(update.Message.Text, command)
+		return messageContainsCommand(strings.ToLower(update.Message.Text), strings.ToLower(command))
 	}
 }
 
