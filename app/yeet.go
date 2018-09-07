@@ -32,8 +32,8 @@ type yeetEntry struct {
 	yeets int
 }
 
-func tradeYeets(chatId string, from string, to string) error {
-	f, err := os.OpenFile("yeets/"+chatId, os.O_RDWR|os.O_CREATE, 0644)
+func tradeYeets(chatID string, from string, to string) error {
+	f, err := os.OpenFile("yeets/"+chatID, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,9 @@ func tradeYeets(chatId string, from string, to string) error {
 var yeetCommand = BotCommand{
 	Name:        "Yeet",
 	Description: "Yeetus that Feetus",
-	Matcher:     messageContainsCommandMatcher("yeet"),
+	Matcher: func(update Update) bool {
+		return strings.ToLower(update.Message.Text) == "/yeet"
+	},
 	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 
 		chadID := strconv.FormatInt(update.Message.Chat.ID, 10)
