@@ -271,6 +271,7 @@ func getCommands() []BotCommand {
 		repostCommand,
 		mockCommand,
 		yeetCommand,
+		hmCommand,
 	}
 
 }
