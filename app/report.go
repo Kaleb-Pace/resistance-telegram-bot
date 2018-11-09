@@ -33,6 +33,7 @@ func GetTime() string {
 	return time.Now().Format("Mon Jan _2 15:04:05 UTC-01:00 2006")
 }
 
+// Generate converts a report to a formatted array of strings
 func (report Report) Generate() []string {
 	final := make([]string, len(report.messages))
 	for i := len(report.messages) - 1; i >= 0; i-- {

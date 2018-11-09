@@ -272,6 +272,7 @@ func getCommands() []BotCommand {
 		mockCommand,
 		yeetCommand,
 		hmCommand,
+		defineCommand,
 	}
 
 }
