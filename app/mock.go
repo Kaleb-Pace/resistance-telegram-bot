@@ -22,10 +22,10 @@ func joinRunes(runes ...rune) string {
 }
 
 var mockCommand = BotCommand{
-	Name:        "Mock",
-	Description: "Reply to a user's message to repeat it in a mocking manner",
-	Matcher:     messageContainsCommandMatcher("mock"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Mock",
+	description: "Reply to a user's message to repeat it in a mocking manner",
+	matcher:     messageContainsCommandMatcher("mock"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 
 		inputMessage := ""
 		generatedMessage := ""

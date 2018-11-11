@@ -72,16 +72,16 @@ func min(a, b int) int {
 }
 
 var pokedexCommand = BotCommand{
-	Name: "Pokedex",
-	Description: "Type /pokedex followed by the pokemon's name you're looking for. Pokemon with special characters in their name have those removed, except for any with a dash '-'. If you're looking for a form specific pokemon(including m/f nidoran), type dash followed by the specific form immediately after the name: /pokedex charizard-mega-x",
-	Matcher: messageContainsCommandMatcher("pokedex"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Pokedex",
+	description: "Type /pokedex followed by the pokemon's name you're looking for. Pokemon with special characters in their name have those removed, except for any with a dash '-'. If you're looking for a form specific pokemon(including m/f nidoran), type dash followed by the specific form immediately after the name: /pokedex charizard-mega-x",
+	matcher:     messageContainsCommandMatcher("pokedex"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		pokemon := getContentFromCommand(update.Message.Text, "pokedex")
-		
+
 		if pokemon == "" {
 			return
 		}
-					
+
 		searchURL := "https://pokeapi.co/api/v2/pokemon/" + strings.ToLower(pokemon)
 		resp, err := http.Get(searchURL)
 

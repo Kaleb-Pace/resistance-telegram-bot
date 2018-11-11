@@ -1,19 +1,29 @@
 package main
 
-
-// Command is a type of bot action that can be executed on a message
+// BotCommand is a basic instance of a command
 type BotCommand struct {
-	Matcher func(msg Update) bool
-	Execute func(x TeleBot, y Update, w chan BotResponse)
-	Name string
-	Description string
+	matcher     func(msg Update) bool
+	execute     func(x TeleBot, y Update, w chan BotResponse)
+	name        string
+	description string
 }
 
-func NewBotCommand(matcher func(Update) bool, execute func(TeleBot,Update, chan BotResponse) , name string, description string) *BotCommand {
-	p := new(BotCommand)
-	p.Matcher = matcher
-	p.Execute = execute
-	p.Name = name
-	p.Description = description
-	return p
+// Name returns name of the command
+func (b BotCommand) Name() string {
+	return b.name
+}
+
+// Description returns the description of the command
+func (b BotCommand) Description() string {
+	return b.description
+}
+
+// Matcher determines whether or not the execute will commense
+func (b BotCommand) Matcher(msg Update) bool {
+	return b.matcher(msg)
+}
+
+// Execute runs the command logic
+func (b BotCommand) Execute(x TeleBot, y Update, w chan BotResponse) {
+	b.execute(x, y, w)
 }

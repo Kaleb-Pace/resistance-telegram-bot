@@ -81,12 +81,12 @@ func StoreFileEntry(chatId string, poster string, hash string, fileId string) er
 }
 
 var repostCommand = BotCommand{
-	Name:        "Repost",
-	Description: "Attempts to detect reposted images",
-	Matcher: func(update Update) bool {
+	name:        "Repost",
+	description: "Attempts to detect reposted images",
+	matcher: func(update Update) bool {
 		return update.Message.Photo != nil
 	},
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		photos := *update.Message.Photo
 		chadId := strconv.FormatInt(update.Message.Chat.ID, 10)
 		poster, err := PersonWhoPostedFile(chadId, photos[0].FileID)

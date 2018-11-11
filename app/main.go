@@ -41,69 +41,69 @@ func getContentFromCommand(message string, command string) string {
 }
 
 // Builds and returns commands
-func getCommands() []BotCommand {
+func getCommands() []Command {
 
-	return []BotCommand{
+	return []Command{
 
 		BotCommand{
-			Name:        "Help",
-			Description: "list of commands",
-			Matcher: func(update Update) bool {
+			name:        "Help",
+			description: "list of commands",
+			matcher: func(update Update) bool {
 				return update.Message.Text == "/help"
 			},
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				var returnMsg bytes.Buffer
 				returnMsg.WriteString("COMMANDS\n ")
 				for _, command := range bot.GetCommands() {
-					returnMsg.WriteString(fmt.Sprintf("\n<b>%s</b> - %s\n", command.Name, command.Description))
+					returnMsg.WriteString(fmt.Sprintf("\n<b>%s</b> - %s\n", command.Name(), command.Description()))
 				}
 				respChan <- *NewTextBotResponse(returnMsg.String(), update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "traps",
-			Description: "just a friendly reminder",
-			Matcher:     messageContainsCommandMatcher("traps"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "traps",
+			description: "just a friendly reminder",
+			matcher:     messageContainsCommandMatcher("traps"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse("https://www.youtube.com/watch?v=9E1YYSZ9qrk", update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "ping",
-			Description: "check if the bot is listening",
-			Matcher:     messageContainsCommandMatcher("ping"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "ping",
+			description: "check if the bot is listening",
+			matcher:     messageContainsCommandMatcher("ping"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse("fuck you want?", update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "wuh",
-			Description: "stop fucking stop",
-			Matcher:     messageContainsCommandMatcher("wuh"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "wuh",
+			description: "stop fucking stop",
+			matcher:     messageContainsCommandMatcher("wuh"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse("https://www.youtube.com/watch?v=j3z7vjs1E18", update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "Ahem",
-			Description: "You are a furry arn't you",
-			Matcher: func(update Update) bool {
+			name:        "Ahem",
+			description: "You are a furry arn't you",
+			matcher: func(update Update) bool {
 				return update.Message.Text == "ahem" && update.Message.ReplyToMessage != nil
 			},
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse(fmt.Sprintf("%s is actually the furry", update.Message.ReplyToMessage.From.UserName), update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "Alias Set",
-			Description: "Alias the chat for other commands like edge, <code>/alias-set resistance</code>",
-			Matcher:     messageContainsCommandMatcher("alias-set"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "Alias Set",
+			description: "Alias the chat for other commands like edge, <code>/alias-set resistance</code>",
+			matcher:     messageContainsCommandMatcher("alias-set"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				alias := getContentFromCommand(update.Message.Text, "alias-set")
 
 				if alias != "" {
@@ -119,31 +119,31 @@ func getCommands() []BotCommand {
 		},
 
 		BotCommand{
-			Name:        "Password",
-			Description: "Gives you chat id for edged site, /password",
-			Matcher:     messageContainsCommandMatcher("password"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "Password",
+			description: "Gives you chat id for edged site, /password",
+			matcher:     messageContainsCommandMatcher("password"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse(strconv.FormatInt(update.Message.Chat.ID, 10), update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "Leaving",
-			Description: "Cause you want more attention, /leaving",
-			Matcher:     messageContainsCommandMatcher("leaving"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "Leaving",
+			description: "Cause you want more attention, /leaving",
+			matcher:     messageContainsCommandMatcher("leaving"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				respChan <- *NewTextBotResponse("Y’all are miserable people who demand to be right at all times, even when you have no experience on the subject. I’m sick of it and it’s gonna be better to just not have to deal with it. So I’m out. You’re mostly all hugely negative impacts on mine and others’ lives. Obviously some of you I still consider friends, but it’s really gotten to where the animosity of a few people make this little group irredeemably shitty for me to be a part of. Or irredeemably shitty in general really. There’s really just no good part of Resistance. ", update.Message.Chat.ID)
 				respChan <- *NewTextBotResponse("Especially when it’s pretty much exclusively me that seems to be the target of all the hate. It just feels super mean spirited. It would be different if you attacked everybody the same way, but you don’t. And don’t even try to fucking pretend you do. I’ve genuinely never felt liked here. ", update.Message.Chat.ID)
 			},
 		},
 
 		BotCommand{
-			Name:        "Edge",
-			Description: "Hide messages for later, reply to a message with /edge",
-			Matcher: func(update Update) bool {
+			name:        "Edge",
+			description: "Hide messages for later, reply to a message with /edge",
+			matcher: func(update Update) bool {
 				return update.Message.ReplyToMessage != nil && update.Message.Text == "/edge"
 			},
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				bot.PushMessageToChatBuffer(strconv.FormatInt(update.Message.Chat.ID, 10), *update.Message.ReplyToMessage)
 				if update.Message.ReplyToMessage.Photo != nil {
 					photos := *update.Message.ReplyToMessage.Photo
@@ -162,12 +162,12 @@ func getCommands() []BotCommand {
 		},
 
 		BotCommand{
-			Name:        "Ejaculate",
-			Description: "Release all the messages that have been edged with /ejaculate",
-			Matcher: func(update Update) bool {
+			name:        "Ejaculate",
+			description: "Release all the messages that have been edged with /ejaculate",
+			matcher: func(update Update) bool {
 				return update.Message.Text == "/ejaculate"
 			},
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				msgSentCount := 0
 				buffer := bot.ClearBuffer(update.Message.Chat.ID)
 				for msg := range buffer.Everything() {
@@ -200,10 +200,10 @@ func getCommands() []BotCommand {
 		},
 
 		BotCommand{
-			Name:        "Rush",
-			Description: "Obliterate your opponent",
-			Matcher:     messageContainsCommandMatcher("rush"),
-			Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+			name:        "Rush",
+			description: "Obliterate your opponent",
+			matcher:     messageContainsCommandMatcher("rush"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				wholeCommand := getContentFromCommand(update.Message.Text, "rush")
 
 				if wholeCommand == "" {

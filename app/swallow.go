@@ -1,10 +1,10 @@
 package main
 
 var swallowCommand = BotCommand{
-	Name:        "Swallow",
-	Description: "Delete all messages in the buffer",
-	Matcher:     messageContainsCommandMatcher("swallow"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Swallow",
+	description: "Delete all messages in the buffer",
+	matcher:     messageContainsCommandMatcher("swallow"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		buffer := bot.ClearBuffer(update.Message.Chat.ID)
 		returnMessage := "No Messages :/"
 		if buffer.Size() > 0 {

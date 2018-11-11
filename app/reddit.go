@@ -85,10 +85,10 @@ func LoginToReddit(username, password, useragent string) (RedditAccount, error) 
 }
 
 var rule34Command = BotCommand{
-	Name:        "Rule34",
-	Description: "Search reddit's rule 34: /rule34 golang",
-	Matcher:     messageContainsCommandMatcher("rule34"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Rule34",
+	description: "Search reddit's rule 34: /rule34 golang",
+	matcher:     messageContainsCommandMatcher("rule34"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		searchTerms := getContentFromCommand(update.Message.Text, "rule34")
 
 		if searchTerms != "" {
@@ -109,10 +109,10 @@ var rule34Command = BotCommand{
 }
 
 var hedgehogCommand = BotCommand{
-	Name:        "Hedgehog",
-	Description: "Have you been hedgehogged? /hedgehog eli",
-	Matcher:     messageContainsCommandMatcher("hedgehog"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Hedgehog",
+	description: "Have you been hedgehogged? /hedgehog eli",
+	matcher:     messageContainsCommandMatcher("hedgehog"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		searchTerms := getContentFromCommand(update.Message.Text, "hedgehog")
 
 		if searchTerms != "" {
@@ -136,10 +136,10 @@ var hedgehogCommand = BotCommand{
 var urlRegex = regexp.MustCompile(`(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?`)
 
 var saveCommand = BotCommand{
-	Name:        "Save",
-	Description: "Save a text post to the subreddit",
-	Matcher:     messageContainsCommandMatcher("save"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Save",
+	description: "Save a text post to the subreddit",
+	matcher:     messageContainsCommandMatcher("save"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		term := getContentFromCommand(update.Message.Text, "save")
 
 		if term == "" {

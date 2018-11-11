@@ -23,14 +23,14 @@ type TeleBot struct {
 	url          string
 	chatBuffers  map[string]MessageStack
 	chatAliases  map[string]string
-	commands     []BotCommand
+	commands     []Command
 	botResponses chan BotResponse
 	errorReport  Report
 	redditUser   RedditAccount
 }
 
 // NewTelegramBot Creates a new telegram bot
-func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, commands []BotCommand) *TeleBot {
+func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, commands []Command) *TeleBot {
 	t := TeleBot{
 		botResponses: make(chan BotResponse),
 		chatAliases:  make(map[string]string),
@@ -45,7 +45,7 @@ func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount,
 	return &t
 }
 
-func (telebot TeleBot) GetCommands() []BotCommand {
+func (telebot TeleBot) GetCommands() []Command {
 	return telebot.commands
 }
 

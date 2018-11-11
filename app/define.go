@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 )
@@ -16,10 +17,10 @@ type DictionarySearchResponse struct {
 }
 
 var defineCommand = BotCommand{
-	Name:        "Define",
-	Description: "Grabs the definition of a word from Merriam Webster",
-	Matcher:     messageContainsCommandMatcher("define"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "Define",
+	description: "Grabs the definition of a word from Merriam Webster",
+	matcher:     messageContainsCommandMatcher("define"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		term := getContentFromCommand(update.Message.Text, "define")
 
 		if term == "" {
@@ -34,6 +35,7 @@ var defineCommand = BotCommand{
 			respChan <- *NewTextBotResponse("Error Searching Dictionary", update.Message.Chat.ID)
 			return
 		}
+		log.Print()
 
 		defer resp.Body.Close()
 

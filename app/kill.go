@@ -40,13 +40,13 @@ var killStatements = []string{
 }
 
 var killCommand = BotCommand{
-	Name: "kill",
-	Description: "insult someone, /kill my 8am",
-	Matcher: messageContainsCommandMatcher("kill"),
-	Execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+	name:        "kill",
+	description: "insult someone, /kill my 8am",
+	matcher:     messageContainsCommandMatcher("kill"),
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		commands := getContentFromCommand(update.Message.Text, "kill")
 		if commands != "" {
-			respChan <- *NewTextBotResponse(commands+killStatements[rand.Int() % len(killStatements)], update.Message.Chat.ID)
+			respChan <- *NewTextBotResponse(commands+killStatements[rand.Int()%len(killStatements)], update.Message.Chat.ID)
 		}
 	},
 }
