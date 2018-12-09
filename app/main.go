@@ -138,6 +138,17 @@ func getCommands() []Command {
 		},
 
 		BotCommand{
+			name:        "God is great",
+			description: "Are we a bad person",
+			matcher: func(update Update) bool {
+				return update.Message.Text == "/gg"
+			},
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+				respChan <- *NewTextBotResponse("GOD IS GREAT", update.Message.Chat.ID)
+			},
+		},
+
+		BotCommand{
 			name:        "Edge",
 			description: "Hide messages for later, reply to a message with /edge",
 			matcher: func(update Update) bool {
