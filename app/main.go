@@ -284,6 +284,7 @@ func getCommands() []Command {
 		yeetCommand,
 		hmCommand,
 		defineCommand,
+		userIDCommand,
 	}
 
 }
