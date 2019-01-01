@@ -270,6 +270,44 @@ func getCommands() []Command {
 			},
 		},
 
+		BotCommand{
+			name:        "Bash",
+			description: "Bully your opponent",
+			matcher:     messageContainsCommandMatcher("bash"),
+			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+				wholeCommand := getContentFromCommand(update.Message.Text, "bash")
+
+				if wholeCommand == "" {
+					return
+				}
+
+				font, err := truetype.Parse(goregular.TTF)
+				if err != nil {
+					bot.errorReport.Log(err.Error())
+				}
+				face := truetype.NewFace(font, &truetype.Options{
+					Size: 70,
+				})
+
+				for i := 0; i < 9; i++ {
+					im, err := gg.LoadPNG(fmt.Sprintf("bash/source/F_00%d.png", i))
+					if err != nil {
+						bot.errorReport.Log("unable to load image: " + err.Error())
+						return
+					}
+					dc := gg.NewContextForImage(im)
+					dc.SetRGB(1, 0, 0)
+					dc.SetFontFace(face)
+					dc.DrawStringAnchored(update.Message.From.UserName, 400, 100, 0.0, 0.0)
+					dc.DrawStringAnchored(wholeCommand, 100, 100, 0.0, 0.0)
+					dc.SavePNG(fmt.Sprintf("bash/out/F_00%d.png", i))
+				}
+
+				StichPicturesTogether("bash/out")
+				respChan <- *NewFileBotResponse("movie.mp4", update.Message.Chat.ID)
+			},
+		},
+
 		holyCommand,
 		killCommand,
 		rule34Command,
