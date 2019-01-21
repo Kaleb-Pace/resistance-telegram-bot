@@ -323,6 +323,7 @@ func getCommands() []Command {
 		hmCommand,
 		defineCommand,
 		userIDCommand,
+		stockPrice,
 	}
 
 }
