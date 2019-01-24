@@ -66,7 +66,7 @@ func getCommands() []Command {
 			description: "just a friendly reminder",
 			matcher:     messageContainsCommandMatcher("traps"),
 			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
-				respChan <- *NewTextBotResponse("https://www.youtube.com/watch?v=l8W1gLNMpdo", update.Message.Chat.ID)
+				respChan <- *NewTextBotResponse("https://www.youtube.com/watch?v=Hmi3x-Ar86Q", update.Message.Chat.ID)
 			},
 		},
 
