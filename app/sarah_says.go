@@ -14,16 +14,17 @@ var sarahSaysCommand = BotCommand{
 		wholeCommand := getContentFromCommand(update.Message.Text, "sarahsays")
 
 		if wholeCommand == "" {
-			return
+			if update.Message.ReplyToMessage != nil && update.Message.ReplyToMessage.Text != "" {
+				wholeCommand = update.Message.ReplyToMessage.Text
+			} else {
+				return
+			}
 		}
 
 		font, err := truetype.Parse(goregular.TTF)
 		if err != nil {
 			bot.errorReport.Log(err.Error())
 		}
-		face := truetype.NewFace(font, &truetype.Options{
-			Size: 35,
-		})
 
 		im, err := gg.LoadPNG("picturecommands/sarahsays.png")
 		if err != nil {
@@ -32,11 +33,26 @@ var sarahSaysCommand = BotCommand{
 		}
 		dc := gg.NewContextForImage(im)
 		dc.SetRGB(0, 0, 0)
-		dc.SetFontFace(face)
-		lines := dc.WordWrap(wholeCommand, 300)
-		for i, l := range lines {
-			dc.DrawString(l, 60, 410+(float64(i)*30))
+
+		fontSize := 60.0
+
+		var lines []string = nil
+
+		for lines == nil || float64(len(lines))*fontSize > 150.0 {
+			fontSize *= .9
+			face := truetype.NewFace(font, &truetype.Options{
+				Size: fontSize,
+			})
+
+			dc.SetFontFace(face)
+
+			lines = dc.WordWrap(wholeCommand, 300)
 		}
+
+		for i, l := range lines {
+			dc.DrawString(l, 60, 410+(float64(i)*fontSize))
+		}
+
 		dc.SavePNG("sarahout.png")
 
 		respChan <- *NewPictureUploadBotResponse("sarahout.png", update.Message.Chat.ID)
