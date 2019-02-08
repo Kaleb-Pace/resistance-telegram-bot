@@ -22,7 +22,7 @@ var sarahSaysCommand = BotCommand{
 			bot.errorReport.Log(err.Error())
 		}
 		face := truetype.NewFace(font, &truetype.Options{
-			Size: 70,
+			Size: 35,
 		})
 
 		im, err := gg.LoadPNG("picturecommands/sarahsays.png")
@@ -33,10 +33,12 @@ var sarahSaysCommand = BotCommand{
 		dc := gg.NewContextForImage(im)
 		dc.SetRGB(0, 0, 0)
 		dc.SetFontFace(face)
-		dc.DrawStringAnchored(update.Message.From.UserName, 400, 100, 0.0, 0.0)
-		dc.DrawStringAnchored(wholeCommand, 100, 100, 0.0, 0.0)
+		lines := dc.WordWrap(wholeCommand, 300)
+		for i, l := range lines {
+			dc.DrawString(l, 60, 410+(float64(i)*30))
+		}
 		dc.SavePNG("sarahout.png")
 
-		respChan <- *NewFileBotResponse("sarahout.png", update.Message.Chat.ID)
+		respChan <- *NewPictureUploadBotResponse("sarahout.png", update.Message.Chat.ID)
 	},
 }

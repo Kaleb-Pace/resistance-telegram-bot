@@ -350,22 +350,7 @@ func (telebot TeleBot) sendImage(path string, chatID int64) {
 func (telebot TeleBot) Start() {
 	go func() {
 		for response := range telebot.botResponses {
-			if response.IsTextMessage() {
-				telebot.sendMessage(response.GetTextMessage(), response.GetChatID())
-			}
-			if response.IsSticker() {
-				log.Println("Sticker")
-				telebot.SendSticker(response.GetSticker(), response.GetChatID())
-				log.Println(response.GetSticker())
-			}
-			if response.IsPicture() {
-				log.Println("Picture")
-				telebot.SendPhotoByID(response.GetPicture(), response.GetChatID())
-			}
-			if response.IsFile() {
-				log.Println("File")
-				telebot.sendFile(response.GetFilePath(), response.GetChatID())
-			}
+			response.Execute(telebot)
 		}
 	}()
 }

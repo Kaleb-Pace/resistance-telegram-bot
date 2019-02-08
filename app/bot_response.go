@@ -1,74 +1,76 @@
 package main
 
 // BotResponse set by bot when a command is satisfied
-type BotResponse struct {
-	Text     string
-	Pid      string
-	Sid      string
-	FilePath string
-	ChatID   int64
+type BotResponse interface {
+	Execute(telebot TeleBot)
 }
 
-func (res BotResponse) GetChatID() int64 {
-	return res.ChatID
+/*************************** TextBotResponse ***************************/
+type TextBotResponse struct {
+	text   string
+	chatID int64
 }
 
-func (res BotResponse) IsTextMessage() bool {
-	return res.Text != ""
+func NewTextBotResponse(msg string, chatID int64) *TextBotResponse {
+	return &TextBotResponse{msg, chatID}
 }
 
-func (res BotResponse) IsPicture() bool {
-	return res.Pid != ""
+func (r TextBotResponse) Execute(telebot TeleBot) {
+	telebot.sendMessage(r.text, r.chatID)
 }
 
-func (res BotResponse) IsSticker() bool {
-	return res.Sid != ""
+/*************************** PictureReferenceBotResponse ***************************/
+type PictureReferenceBotResponse struct {
+	pid    string
+	chatID int64
 }
 
-func (res BotResponse) IsFile() bool {
-	return res.FilePath != ""
+func NewPictureReferenceBotResponse(pid string, chatID int64) *PictureReferenceBotResponse {
+	return &PictureReferenceBotResponse{pid, chatID}
 }
 
-func (res BotResponse) GetTextMessage() string {
-	return res.Text
+func (r PictureReferenceBotResponse) Execute(telebot TeleBot) {
+	telebot.SendPhotoByID(r.pid, r.chatID)
 }
 
-func (res BotResponse) GetPicture() string {
-	return res.Pid
+/*************************** PictureUploadBotResponse ***************************/
+type PictureUploadBotResponse struct {
+	filepath string
+	chatID   int64
 }
 
-func (res BotResponse) GetSticker() string {
-	return res.Sid
+func NewPictureUploadBotResponse(filepath string, chatID int64) *PictureUploadBotResponse {
+	return &PictureUploadBotResponse{filepath, chatID}
 }
 
-func (res BotResponse) GetFilePath() string {
-	return res.FilePath
+func (r PictureUploadBotResponse) Execute(telebot TeleBot) {
+	telebot.sendImage(r.filepath, r.chatID)
 }
 
-func NewTextBotResponse(msg string, chatID int64) *BotResponse {
-	p := new(BotResponse)
-	p.Text = msg
-	p.ChatID = chatID
-	return p
+/*************************** StickerBotResponse ***************************/
+type StickerBotResponse struct {
+	sid    string
+	chatID int64
 }
 
-func NewPictureBotResponse(pid string, chatID int64) *BotResponse {
-	p := new(BotResponse)
-	p.Pid = pid
-	p.ChatID = chatID
-	return p
+func NewStickerBotResponse(sid string, chatID int64) *StickerBotResponse {
+	return &StickerBotResponse{sid, chatID}
 }
 
-func NewStickerBotResponse(sid string, chatID int64) *BotResponse {
-	p := new(BotResponse)
-	p.Sid = sid
-	p.ChatID = chatID
-	return p
+func (r StickerBotResponse) Execute(telebot TeleBot) {
+	telebot.SendSticker(r.sid, r.chatID)
 }
 
-func NewFileBotResponse(filePath string, chatID int64) *BotResponse {
-	p := new(BotResponse)
-	p.FilePath = filePath
-	p.ChatID = chatID
-	return p
+/*************************** FileUploadBotResponse ***************************/
+type FileUploadBotResponse struct {
+	filePath string
+	chatID   int64
+}
+
+func NewFileUploadBotResponse(filePath string, chatID int64) *FileUploadBotResponse {
+	return &FileUploadBotResponse{filePath, chatID}
+}
+
+func (r FileUploadBotResponse) Execute(telebot TeleBot) {
+	telebot.sendFile(r.filePath, r.chatID)
 }

@@ -186,7 +186,7 @@ func getCommands() []Command {
 					if msg.Photo != nil {
 						photos := *msg.Photo
 						respChan <- *NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
-						respChan <- *NewPictureBotResponse(photos[0].FileID, update.Message.Chat.ID)
+						respChan <- *NewPictureReferenceBotResponse(photos[0].FileID, update.Message.Chat.ID)
 					} else if msg.Sticker != nil {
 						respChan <- *NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
 						respChan <- *NewStickerBotResponse(msg.Sticker.FileID, update.Message.Chat.ID)
@@ -266,7 +266,7 @@ func getCommands() []Command {
 				}
 
 				StichPicturesTogether("trunks2out")
-				respChan <- *NewFileBotResponse("movie.mp4", update.Message.Chat.ID)
+				respChan <- *NewFileUploadBotResponse("movie.mp4", update.Message.Chat.ID)
 			},
 		},
 
@@ -304,7 +304,7 @@ func getCommands() []Command {
 				}
 
 				StichPicturesTogether("bash/out")
-				respChan <- *NewFileBotResponse("movie.mp4", update.Message.Chat.ID)
+				respChan <- *NewFileUploadBotResponse("movie.mp4", update.Message.Chat.ID)
 			},
 		},
 
