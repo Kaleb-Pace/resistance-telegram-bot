@@ -324,6 +324,10 @@ func getCommands() []Command {
 		defineCommand,
 		userIDCommand,
 		stockPrice,
+		resistanceRuleOneCommand,
+		resistanceRuleTwoCommand,
+		resistanceRuleThreeCommand,
+		sarahSaysCommand,
 	}
 
 }
