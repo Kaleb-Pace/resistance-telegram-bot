@@ -245,8 +245,18 @@ func (telebot TeleBot) SendPhotoByID(fileID string, chatID int64) error {
 	return err
 }
 
+func (telebot TeleBot) SendFileByID(fileID string, chatID int64) error {
+	_, err := http.Get(fmt.Sprintf("%ssendDocument?chat_id=%s&document=%s", telebot.url, strconv.FormatInt(chatID, 10), fileID))
+	return err
+}
+
 func (telebot TeleBot) SendSticker(fileID string, chatID int64) error {
 	_, err := http.Get(fmt.Sprintf("%ssendSticker?chat_id=%s&sticker=%s", telebot.url, strconv.FormatInt(chatID, 10), fileID))
+	return err
+}
+
+func (telebot TeleBot) SendVideoByID(fileID string, chatID int64) error {
+	_, err := http.Get(fmt.Sprintf("%ssendvideo?chat_id=%s&video=%s", telebot.url, strconv.FormatInt(chatID, 10), fileID))
 	return err
 }
 

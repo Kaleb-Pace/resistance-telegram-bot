@@ -1,5 +1,7 @@
 package main
 
+import "log"
+
 // BotResponse set by bot when a command is satisfied
 type BotResponse interface {
 	Execute(telebot TeleBot)
@@ -73,4 +75,37 @@ func NewFileUploadBotResponse(filePath string, chatID int64) *FileUploadBotRespo
 
 func (r FileUploadBotResponse) Execute(telebot TeleBot) {
 	telebot.sendFile(r.filePath, r.chatID)
+}
+
+/*************************** FileReferenceResponse ***************************/
+type FlieReferenceBotResponse struct {
+	fid    string
+	chatID int64
+}
+
+func NewFileReferenceBotResponse(fid string, chatID int64) *FlieReferenceBotResponse {
+	return &FlieReferenceBotResponse{fid, chatID}
+}
+
+func (r FlieReferenceBotResponse) Execute(telebot TeleBot) {
+	telebot.SendFileByID(r.fid, r.chatID)
+}
+
+/*************************** VideoReferenceResponse ***************************/
+type VideoReferenceResponse struct {
+	fid    string
+	chatID int64
+}
+
+func NewVideoReferenceBotResponse(fid string, chatID int64) *VideoReferenceResponse {
+	return &VideoReferenceResponse{fid, chatID}
+}
+
+func (r VideoReferenceResponse) Execute(telebot TeleBot) {
+	err := telebot.SendVideoByID(r.fid, r.chatID)
+	if err != nil {
+		log.Printf("Error Sending Video: %s", err.Error())
+	} else {
+		log.Print("Video Sent successfully")
+	}
 }

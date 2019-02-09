@@ -32,6 +32,7 @@ type Message struct {
 	Photo                 *[]PhotoSize     `json:"photo"`                   // optional
 	Sticker               *Sticker         `json:"sticker"`                 // optional
 	Caption               string           `json:"caption"`                 // optional
+	Video                 *Video           `json:"video"`                   // optional
 	Contact               *Contact         `json:"contact"`                 // optional
 	Location              *Location        `json:"location"`                // optional
 	Venue                 *Venue           `json:"venue"`                   // optional

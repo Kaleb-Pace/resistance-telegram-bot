@@ -156,19 +156,37 @@ func getCommands() []Command {
 			},
 			execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 				bot.PushMessageToChatBuffer(strconv.FormatInt(update.Message.Chat.ID, 10), *update.Message.ReplyToMessage)
+
+				whatWasEdged := "unknown message type. You're not getting that back lol"
+
+				if update.Message.ReplyToMessage.Text != "" {
+					whatWasEdged = "text.. the fuck could have been said to warrant edging text?"
+				}
+
+				log.Printf("%+v\n", update.Message.ReplyToMessage)
 				if update.Message.ReplyToMessage.Photo != nil {
 					photos := *update.Message.ReplyToMessage.Photo
+					whatWasEdged = "photo"
 					go bot.GetFile(photos[0].FileID)
 				}
 
 				if update.Message.ReplyToMessage.Sticker != nil {
+					whatWasEdged = "sticker"
 					sticker := *update.Message.ReplyToMessage.Sticker
 					go bot.GetFile(sticker.FileID)
 				}
 
+				if update.Message.ReplyToMessage.Document != nil {
+					whatWasEdged = "document"
+				}
+
+				if update.Message.ReplyToMessage.Video != nil {
+					whatWasEdged = "video"
+				}
+
 				go bot.deleteMessage(update.Message.Chat.ID, update.Message.ReplyToMessage.MessageID)
 				go bot.deleteMessage(update.Message.Chat.ID, update.Message.MessageID)
-				respChan <- *NewTextBotResponse(fmt.Sprintf("%s edged %s", update.Message.From.UserName, update.Message.ReplyToMessage.From.UserName), update.Message.Chat.ID)
+				respChan <- *NewTextBotResponse(fmt.Sprintf("%s edged %s's %s", update.Message.From.UserName, update.Message.ReplyToMessage.From.UserName, whatWasEdged), update.Message.Chat.ID)
 			},
 		},
 
@@ -183,18 +201,18 @@ func getCommands() []Command {
 				buffer := bot.ClearBuffer(update.Message.Chat.ID)
 				for msg := range buffer.Everything() {
 					msgSentCount++
+					respChan <- NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
 					if msg.Photo != nil {
 						photos := *msg.Photo
-						respChan <- *NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
-						respChan <- *NewPictureReferenceBotResponse(photos[0].FileID, update.Message.Chat.ID)
+						respChan <- NewPictureReferenceBotResponse(photos[0].FileID, update.Message.Chat.ID)
 					} else if msg.Sticker != nil {
-						respChan <- *NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
-						respChan <- *NewStickerBotResponse(msg.Sticker.FileID, update.Message.Chat.ID)
+						respChan <- NewStickerBotResponse(msg.Sticker.FileID, update.Message.Chat.ID)
 					} else if msg.Document != nil {
-						respChan <- *NewTextBotResponse(msg.From.UserName+" sent:", update.Message.Chat.ID)
-						respChan <- *NewStickerBotResponse(msg.Document.FileID, update.Message.Chat.ID)
-					} else {
-						respChan <- *NewTextBotResponse(fmt.Sprintf("%s sent:\n%s", msg.From.UserName, msg.Text), update.Message.Chat.ID)
+						respChan <- NewFileReferenceBotResponse(msg.Document.FileID, update.Message.Chat.ID)
+					} else if msg.Video != nil {
+						respChan <- NewVideoReferenceBotResponse(msg.Video.FileID, update.Message.Chat.ID)
+					} else if msg.Text != "" {
+						respChan <- NewTextBotResponse(msg.Text, update.Message.Chat.ID)
 					}
 				}
 
