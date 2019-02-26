@@ -137,7 +137,7 @@ func getCommands() []Command {
 			},
 		},
 
-                BotCommand{
+		BotCommand{
 			name:        "Opinion",
 			description: "It's not what you said, it's how you said it",
 			matcher:     messageContainsCommandMatcher("opinion"),
@@ -294,8 +294,8 @@ func getCommands() []Command {
 					}
 				}
 
-				StichPicturesTogether("trunks2out")
-				respChan <- *NewFileUploadBotResponse("movie.mp4", update.Message.Chat.ID)
+				StichPicturesTogether("trunks2out/F_%03d.png", "trunksout.mp4", 10)
+				respChan <- *NewFileUploadBotResponse("trunksout.mp4", update.Message.Chat.ID)
 			},
 		},
 
@@ -332,8 +332,8 @@ func getCommands() []Command {
 					dc.SavePNG(fmt.Sprintf("bash/out/F_00%d.png", i))
 				}
 
-				StichPicturesTogether("bash/out")
-				respChan <- *NewFileUploadBotResponse("movie.mp4", update.Message.Chat.ID)
+				StichPicturesTogether("bash/out/F_%03d.png", "bashout.mp4", 15)
+				respChan <- *NewFileUploadBotResponse("bashout.mp4", update.Message.Chat.ID)
 			},
 		},
 
@@ -357,6 +357,7 @@ func getCommands() []Command {
 		resistanceRuleTwoCommand,
 		resistanceRuleThreeCommand,
 		sarahSaysCommand,
+		wastedCommand,
 	}
 
 }

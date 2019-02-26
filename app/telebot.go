@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // TeleBot talks to telegram and manages application state
@@ -171,7 +172,7 @@ func (telebot *TeleBot) GetUpdates() ([]Update, error) {
 	return updates.Result, nil
 }
 
-// GetImage Downloads an image by its file id and returns the filepath on the system
+// GetFile Downloads a file using its file id and returns the filepath on the system
 func (telebot TeleBot) GetFile(fileID string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("%sgetFile?file_id=%s", telebot.url, fileID))
 
@@ -206,9 +207,19 @@ func (telebot TeleBot) GetFile(fileID string) (string, error) {
 		return "", err
 	}
 
-	filePath := "media/" + fileID
+	folder := "media/"
+	fileName := imageResponse.Result.FilePath
 
-	output, err := os.Create(filePath)
+	splitResults := strings.Split(imageResponse.Result.FilePath, "/")
+
+	if len(splitResults) == 2 {
+		folder += splitResults[0]
+		fileName = splitResults[1]
+	}
+
+	os.MkdirAll(folder, os.ModePerm)
+
+	output, err := os.Create(folder + "/" + fileName)
 	if err != nil {
 		return "", err
 	}
@@ -221,7 +232,7 @@ func (telebot TeleBot) GetFile(fileID string) (string, error) {
 
 	log.Println("Succesfully downloaded")
 
-	return filePath, nil
+	return folder + "/" + fileName, nil
 }
 
 func (telebot TeleBot) deleteMessage(chatID int64, messageID int) (bool, error) {
