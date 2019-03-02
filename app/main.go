@@ -178,13 +178,13 @@ func getCommands() []Command {
 				if update.Message.ReplyToMessage.Photo != nil {
 					photos := *update.Message.ReplyToMessage.Photo
 					whatWasEdged = "photo"
-					go bot.GetFile(photos[0].FileID)
+					go bot.GetFile(photos[0].FileID, 2097152)
 				}
 
 				if update.Message.ReplyToMessage.Sticker != nil {
 					whatWasEdged = "sticker"
 					sticker := *update.Message.ReplyToMessage.Sticker
-					go bot.GetFile(sticker.FileID)
+					go bot.GetFile(sticker.FileID, 2097152)
 				}
 
 				if update.Message.ReplyToMessage.Document != nil {

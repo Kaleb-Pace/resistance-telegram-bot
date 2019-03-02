@@ -37,22 +37,19 @@ var wastedCommand = BotCommand{
 	matcher:     messageContainsCommandMatcher("wasted"),
 	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 
+		var fileID string
+
 		if update.Message.ReplyToMessage.Document != nil {
-			path, err := bot.GetFile(update.Message.ReplyToMessage.Document.FileID)
+			fileID = update.Message.ReplyToMessage.Document.FileID
+		} else if update.Message.ReplyToMessage.Video != nil {
+			fileID = update.Message.ReplyToMessage.Video.FileID
+		}
+
+		if fileID != "" {
+
+			path, err := bot.GetFile(fileID, 2097152)
 			if err != nil {
 				respChan <- *NewTextBotResponse("Error downloading file: "+err.Error(), update.Message.Chat.ID)
-				return
-			}
-
-			fi, err := os.Stat(path)
-			if err != nil {
-				respChan <- *NewTextBotResponse("Error examining file: "+err.Error(), update.Message.Chat.ID)
-				return
-			}
-
-			size := fi.Size()
-			if size > 2097152 {
-				respChan <- *NewTextBotResponse("That file is a little to big for my taste (>2MB). Consider donating vbucks to server maintainer ;3", update.Message.Chat.ID)
 				return
 			}
 
@@ -81,6 +78,8 @@ var wastedCommand = BotCommand{
 			}
 
 			frames, _ := ioutil.ReadDir("wastedTemp")
+			savedFrameIndex := 1
+			flashed := false
 			for i := 0; i < len(frames); i++ {
 				filePath := fmt.Sprintf("wastedTemp/%04d.png", i+1)
 				im, err := gg.LoadPNG(filePath)
@@ -92,24 +91,38 @@ var wastedCommand = BotCommand{
 				dc := gg.NewContextForImage(im)
 				Greyscale(dc, math.Min(float64(i*2)/float64(len(frames)), 1))
 				if float64(i)/float64(len(frames)) > 0.5 {
-					size := math.Min(float64(dc.Width()), float64(dc.Height()))
-					face := truetype.NewFace(font, &truetype.Options{
-						Size: size * .15,
-					})
-					dc.SetFontFace(face)
-					dc.SetRGB(1, 0, 0)
-					dc.DrawStringAnchored("WASTED", float64(dc.Width()/2)-(size*.25), float64(dc.Height()/2), 0.0, 0.0)
+					if flashed == false {
+						Shift(dc, 1, 1, 1, 1)
+						flashed = true
+					} else {
+						size := math.Min(float64(dc.Width()), float64(dc.Height()))
+						face := truetype.NewFace(font, &truetype.Options{
+							Size: size * .15,
+						})
+						dc.SetFontFace(face)
+						dc.SetRGB(1, 0, 0)
+						dc.DrawStringAnchored("WASTED", float64(dc.Width()/2)-(size*.25), float64(dc.Height()/2), 0.0, 0.0)
+						dc.SavePNG(fmt.Sprintf("wastedTemp/F_%04d.png", savedFrameIndex+1))
+						savedFrameIndex++
+					}
 				}
-				dc.SavePNG(filePath)
+				dc.SavePNG(fmt.Sprintf("wastedTemp/F_%04d.png", savedFrameIndex+1))
+				savedFrameIndex++
 			}
 
-			err = StichPicturesTogether("wastedTemp/%04d.png", "wastedout.mp4", frameRate)
+			err = StichPicturesTogether("wastedTemp/F_%04d.png", "wastedout.mp4", frameRate)
 			if err != nil {
 				respChan <- *NewTextBotResponse("Error stitching file: "+err.Error(), update.Message.Chat.ID)
 				return
 			}
 
 			respChan <- *NewFileUploadBotResponse("wastedout.mp4", update.Message.Chat.ID)
+
+			err = os.Remove(path)
+			if err != nil {
+				respChan <- *NewTextBotResponse("Error deleting file: "+err.Error(), update.Message.Chat.ID)
+				return
+			}
 
 		} else {
 			respChan <- *NewTextBotResponse("Please respond to a gif ", update.Message.Chat.ID)

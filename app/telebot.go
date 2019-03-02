@@ -173,7 +173,7 @@ func (telebot *TeleBot) GetUpdates() ([]Update, error) {
 }
 
 // GetFile Downloads a file using its file id and returns the filepath on the system
-func (telebot TeleBot) GetFile(fileID string) (string, error) {
+func (telebot TeleBot) GetFile(fileID string, byteLimit int) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("%sgetFile?file_id=%s", telebot.url, fileID))
 
 	log.Println("Begining download")
@@ -183,12 +183,14 @@ func (telebot TeleBot) GetFile(fileID string) (string, error) {
 		return "", err
 	}
 
-	var imageResponse GetImageResponse
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
+	log.Println(string(body))
+
+	var imageResponse GetFileResponse
 	err = json.Unmarshal([]byte(body), &imageResponse)
 	if err != nil {
 		log.Println("err: " + err.Error())
@@ -197,6 +199,10 @@ func (telebot TeleBot) GetFile(fileID string) (string, error) {
 
 	if imageResponse.Ok == false {
 		return "", errors.New("telegram resolved unsucessfully")
+	}
+
+	if imageResponse.Result.FileSize > byteLimit {
+		return "", fmt.Errorf("Filesize exceed limit: %d > %d", imageResponse.Result.FileSize, byteLimit)
 	}
 
 	log.Println(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", telebot.key, imageResponse.Result.FilePath))

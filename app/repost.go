@@ -88,8 +88,8 @@ var repostCommand = BotCommand{
 	},
 	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 		photos := *update.Message.Photo
-		chadId := strconv.FormatInt(update.Message.Chat.ID, 10)
-		poster, err := PersonWhoPostedFile(chadId, photos[0].FileID)
+		chadID := strconv.FormatInt(update.Message.Chat.ID, 10)
+		poster, err := PersonWhoPostedFile(chadID, photos[0].FileID)
 		if err != nil {
 			log.Println(err.Error())
 			return
@@ -97,10 +97,14 @@ var repostCommand = BotCommand{
 		if poster != "" {
 			respChan <- *NewTextBotResponse(fmt.Sprintf("REPOST: %s has already posted this", poster), update.Message.Chat.ID)
 		} else {
-			bot.GetFile(photos[0].FileID)
-			hash, err := HashFile(fmt.Sprintf("media/%s", photos[0].FileID))
+			path, err := bot.GetFile(photos[0].FileID, 2097152)
+			if err != nil {
+				log.Println(err.Error())
+			}
+
+			hash, err := HashFile(path)
 			if err == nil {
-				hashPoster, err := PersonWhoPostedHash(chadId, hash)
+				hashPoster, err := PersonWhoPostedHash(chadID, hash)
 				if err != nil {
 					log.Println(err.Error())
 					return
@@ -108,7 +112,7 @@ var repostCommand = BotCommand{
 				if hashPoster != "" {
 					respChan <- *NewTextBotResponse(fmt.Sprintf("REPOST: %s has already posted this", hashPoster), update.Message.Chat.ID)
 				} else {
-					err := StoreFileEntry(chadId, update.Message.From.UserName, hash, photos[0].FileID)
+					err := StoreFileEntry(chadID, update.Message.From.UserName, hash, photos[0].FileID)
 					if err != nil {
 						log.Println(err.Error())
 					}

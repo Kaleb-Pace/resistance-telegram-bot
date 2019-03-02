@@ -9,12 +9,14 @@ type PhotoSize struct {
 }
 
 // GetImageResponse
-type GetImageResponse struct {
-	Ok     bool                 `json:"ok"`
-	Result GetImageResponseData `json:"result"`
+type GetFileResponse struct {
+	Ok     bool                `json:"ok"`
+	Result GetFileResponseData `json:"result"`
 }
 
 // GetImageResponseData
-type GetImageResponseData struct {
+type GetFileResponseData struct {
 	FilePath string `json:"file_path"`
+	FileSize int    `json:"file_size"`
+	ID       string `json:"file_id"`
 }
