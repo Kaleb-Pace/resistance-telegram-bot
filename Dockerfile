@@ -14,10 +14,11 @@ RUN apt-get -y update && apt-get install -y \
     libtiff-dev
 
 # Compile and install ffmpeg from source
-RUN git clone https://github.com/FFmpeg/FFmpeg /root/ffmpeg && \
+RUN git clone https://github.com/FFmpeg/FFmpeg /root/ffmpeg --depth 1 && \
     cd /root/ffmpeg && \
     ./configure --enable-nonfree --disable-shared --extra-cflags=-I/usr/local/include --enable-gpl --enable-libx264 && \
     make -j8 && make install -j8
+
 # If you want to add some content to this image because the above takes a LONGGG time to build
 ARG CACHEBREAK=1
 

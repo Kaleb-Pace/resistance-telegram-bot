@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -28,10 +29,11 @@ type TeleBot struct {
 	botResponses chan BotResponse
 	errorReport  Report
 	redditUser   RedditAccount
+	db           *sql.DB
 }
 
 // NewTelegramBot Creates a new telegram bot
-func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, commands []Command) *TeleBot {
+func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, db *sql.DB, commands []Command) *TeleBot {
 	t := TeleBot{
 		botResponses: make(chan BotResponse),
 		chatAliases:  make(map[string]string),
@@ -42,6 +44,7 @@ func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount,
 		lastUpdate:   0,
 		redditUser:   redditAccount,
 		url:          fmt.Sprintf("https://api.telegram.org/bot%s/", key),
+		db:           db,
 	}
 	return &t
 }
@@ -382,7 +385,77 @@ func (telebot TeleBot) Start() {
 	}()
 }
 
+func (telebot *TeleBot) saveMessageToDB(message *Message) {
+	if message == nil {
+		return
+	}
+
+	var replyTo *int
+	if message.ReplyToMessage != nil {
+		replyTo = &message.ReplyToMessage.MessageID
+	}
+
+	var fromID *int
+	var fromUserName *string
+	if message.From != nil {
+		fromID = &message.From.ID
+		fromUserName = &message.From.UserName
+	}
+
+	var forwardedFromUserID *int
+	if message.ForwardFrom != nil {
+		forwardedFromUserID = &message.ForwardFrom.ID
+	}
+
+	var forwardedFromChatID *int64
+	if message.ForwardFromChat != nil {
+		forwardedFromChatID = &message.ForwardFromChat.ID
+	}
+
+	var photoFileID *string
+	if message.Photo != nil {
+		photoFileID = &(*message.Photo)[0].FileID
+	}
+
+	var videoFileID *string
+	if message.Video != nil {
+		videoFileID = &message.Video.FileID
+	}
+
+	var documentFileID *string
+	if message.Document != nil {
+		documentFileID = &message.Document.FileID
+	}
+
+	var stickerFileID *string
+	if message.Sticker != nil {
+		stickerFileID = &message.Sticker.FileID
+	}
+
+	_, err := telebot.db.Exec(
+		"INSERT INTO messages (MessageID, ChatID, Date, FromID, FromUserName, ReplyToMessageID, ForwardedFromUserID, ForwardedFromChatID, PhotoFileID, VideoFileID, DocumentFileID, StickerID, Text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		message.MessageID,
+		message.Chat.ID,
+		message.Date,
+		fromID,
+		fromUserName,
+		replyTo,
+		forwardedFromUserID,
+		forwardedFromChatID,
+		photoFileID,
+		videoFileID,
+		documentFileID,
+		stickerFileID,
+		message.Text,
+	)
+
+	if err != nil {
+		log.Printf("Error saving message: %s\n", err.Error())
+	}
+}
+
 func (telebot *TeleBot) OnMessage(update Update) {
+	go telebot.saveMessageToDB(update.Message)
 	for _, command := range telebot.commands {
 		if command.Matcher(update) {
 			go command.Execute(*telebot, update, telebot.botResponses)

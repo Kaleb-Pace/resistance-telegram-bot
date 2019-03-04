@@ -5,6 +5,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
@@ -18,6 +19,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font/gofont/goregular"
 )
@@ -454,9 +456,14 @@ func main() {
 	}
 	log.Printf("Starting bot using port %s\n", port)
 
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s)/db", os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_ADDRESS")))
+	if err != nil {
+		panic(err.Error())
+	}
+
 	errorReport := NewReport()
 	redditUser := logginToReddit(*errorReport)
-	teleBot := NewTelegramBot(os.Getenv("TELE_KEY"), *errorReport, redditUser, getCommands())
+	teleBot := NewTelegramBot(os.Getenv("TELE_KEY"), *errorReport, redditUser, db, getCommands())
 	teleBot.Start()
 
 	go listenForUpdates(*teleBot)
