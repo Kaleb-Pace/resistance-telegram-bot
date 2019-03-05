@@ -19,3 +19,24 @@ To actually run the app:
 ```
 docker-compose up
 ```
+
+### Database Schema
+
+```SQL
+CREATE TABLE `messages` (
+  `MessageID` int(11) NOT NULL,
+  `ChatID` bigint(20) NOT NULL,
+  `Date` int(11) NOT NULL,
+  `FromID` int(11) DEFAULT NULL,
+  `FromUserName` varchar(100) DEFAULT NULL,
+  `ReplyToMessageID` int(11) DEFAULT NULL,
+  `ForwardedFromUserID` int(11) DEFAULT NULL,
+  `ForwardedFromChatID` bigint(20) DEFAULT NULL,
+  `PhotoFileID` varchar(200) DEFAULT NULL,
+  `VideoFileID` varchar(200) DEFAULT NULL,
+  `DocumentFileID` varchar(200) DEFAULT NULL,
+  `StickerID` varchar(200) DEFAULT NULL,
+  `Text` varchar(4096) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+```
