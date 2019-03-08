@@ -29,11 +29,11 @@ type TeleBot struct {
 	botResponses chan BotResponse
 	errorReport  Report
 	redditUser   RedditAccount
-	db           *sql.DB
+	masterDb     *sql.DB
 }
 
 // NewTelegramBot Creates a new telegram bot
-func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, db *sql.DB, commands []Command) *TeleBot {
+func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount, masterDb *sql.DB, commands []Command) *TeleBot {
 	t := TeleBot{
 		botResponses: make(chan BotResponse),
 		chatAliases:  make(map[string]string),
@@ -44,7 +44,7 @@ func NewTelegramBot(key string, errorReport Report, redditAccount RedditAccount,
 		lastUpdate:   0,
 		redditUser:   redditAccount,
 		url:          fmt.Sprintf("https://api.telegram.org/bot%s/", key),
-		db:           db,
+		masterDb:     masterDb,
 	}
 	return &t
 }
@@ -432,7 +432,7 @@ func (telebot *TeleBot) saveMessageToDB(message *Message) {
 		stickerFileID = &message.Sticker.FileID
 	}
 
-	_, err := telebot.db.Exec(
+	_, err := telebot.masterDb.Exec(
 		"INSERT INTO messages (MessageID, ChatID, Date, FromID, FromUserName, ReplyToMessageID, ForwardedFromUserID, ForwardedFromChatID, PhotoFileID, VideoFileID, DocumentFileID, StickerID, Text) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		message.MessageID,
 		message.Chat.ID,

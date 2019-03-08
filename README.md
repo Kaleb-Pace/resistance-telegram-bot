@@ -13,6 +13,13 @@ REDDIT_CLIENT_ID=<id of app generated on reddit>
 REDDIT_CLIENT_SECRET=<secret of the app>
 REDDIT_USERNAME=<your reddit username>
 REDDIT_PASSWORD=<your reddit password>
+DICT_KEY=<Merriam-Webster API>
+THESAURUS_KEY=<Merriam-Webster API>
+DB_ADDRESS=<IP address of My SQL database>
+DB_MASTER_USERNAME=<Name of user that can do inserts>
+DB_MASTER_PASSWORD=<yup>
+DB_COMMAND_USERNAME=<Name of user that can only do selects>
+DB_COMMAND_PASSWORD=<yup>
 ```
 
 To actually run the app:

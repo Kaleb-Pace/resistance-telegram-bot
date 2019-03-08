@@ -43,7 +43,7 @@ func getContentFromCommand(message string, command string) string {
 }
 
 // Builds and returns commands
-func getCommands() []Command {
+func getCommands(commandDb *sql.DB) []Command {
 
 	return []Command{
 
@@ -173,7 +173,7 @@ func getCommands() []Command {
 				whatWasEdged := "unknown message type. You're not getting that back lol"
 
 				if update.Message.ReplyToMessage.Text != "" {
-					whatWasEdged = "text.. the fuck could have been said to warrant edging text?"
+					whatWasEdged = "text"
 				}
 
 				log.Printf("%+v\n", update.Message.ReplyToMessage)
@@ -360,6 +360,7 @@ func getCommands() []Command {
 		resistanceRuleThreeCommand,
 		sarahSaysCommand,
 		wastedCommand,
+		NewQueryCommand(commandDb),
 	}
 
 }
@@ -456,14 +457,19 @@ func main() {
 	}
 	log.Printf("Starting bot using port %s\n", port)
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s)/db", os.Getenv("DB_USERNAME"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_ADDRESS")))
+	masterDb, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s)/db", os.Getenv("DB_MASTER_USERNAME"), os.Getenv("DB_MASTER_PASSWORD"), os.Getenv("DB_ADDRESS")))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	commandDb, err := sql.Open("mysql", fmt.Sprintf("%s:%s@(%s)/db", os.Getenv("DB_COMMAND_USERNAME"), os.Getenv("DB_COMMAND_PASSWORD"), os.Getenv("DB_ADDRESS")))
 	if err != nil {
 		panic(err.Error())
 	}
 
 	errorReport := NewReport()
 	redditUser := logginToReddit(*errorReport)
-	teleBot := NewTelegramBot(os.Getenv("TELE_KEY"), *errorReport, redditUser, db, getCommands())
+	teleBot := NewTelegramBot(os.Getenv("TELE_KEY"), *errorReport, redditUser, masterDb, getCommands(commandDb))
 	teleBot.Start()
 
 	go listenForUpdates(*teleBot)
