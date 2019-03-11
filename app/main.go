@@ -354,6 +354,7 @@ func getCommands(commandDb *sql.DB) []Command {
 		hmCommand,
 		defineCommand,
 		userIDCommand,
+		messageIDCommand,
 		stockPrice,
 		resistanceRuleOneCommand,
 		resistanceRuleTwoCommand,
@@ -361,6 +362,7 @@ func getCommands(commandDb *sql.DB) []Command {
 		sarahSaysCommand,
 		wastedCommand,
 		NewQueryCommand(commandDb),
+		epochCommand,
 	}
 
 }

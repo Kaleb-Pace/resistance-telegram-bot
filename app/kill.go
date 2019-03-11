@@ -37,6 +37,7 @@ var killStatements = []string{
 	" opened Resistance after 5 PM",
 	" choked on a Tide Pod",
 	" is handing out with Logan Paul",
+	" had their repo deleted by Jacob",
 }
 
 var killCommand = BotCommand{

@@ -19,3 +19,16 @@ var userIDCommand = BotCommand{
 		}
 	},
 }
+
+var messageIDCommand = BotCommand{
+	name:        "messageId",
+	description: "see the user's id",
+	matcher: func(update Update) bool {
+		return strings.ToLower(update.Message.Text) == "/mid"
+	},
+	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
+		if update.Message.ReplyToMessage != nil {
+			respChan <- *NewTextBotResponse(fmt.Sprintf("Message Id: %d", update.Message.ReplyToMessage.MessageID), update.Message.Chat.ID)
+		}
+	},
+}
