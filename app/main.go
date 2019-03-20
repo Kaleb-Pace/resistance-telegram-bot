@@ -363,6 +363,7 @@ func getCommands(commandDb *sql.DB) []Command {
 		wastedCommand,
 		NewQueryCommand(commandDb),
 		epochCommand,
+		sunnyCommand,
 	}
 
 }

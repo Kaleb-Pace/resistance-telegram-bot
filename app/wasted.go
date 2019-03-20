@@ -56,13 +56,13 @@ var wastedCommand = BotCommand{
 			desiredFlash = .5
 		}
 
-		path, err := bot.GetFile(fileID, 2097152)
+		path, err := bot.GetFile(fileID, 1024*1024*5)
 		if err != nil {
 			respChan <- *NewTextBotResponse("Error downloading file: "+err.Error(), update.Message.Chat.ID)
 			return
 		}
 
-		if len(path) <= 4 || !(path[len(path)-4:] == ".mp4" || path[len(path)-5:] == ".webm" ) {
+		if len(path) <= 4 || !(path[len(path)-4:] == ".mp4" || path[len(path)-5:] == ".webm") {
 			respChan <- *NewTextBotResponse(fmt.Sprintf("Unsupported filetype: %s", path), update.Message.Chat.ID)
 		}
 

@@ -1,6 +1,10 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	"github.com/fogleman/gg"
+)
 
 // BotResponse set by bot when a command is satisfied
 type BotResponse interface {
@@ -33,6 +37,20 @@ func NewPictureReferenceBotResponse(pid string, chatID int64) *PictureReferenceB
 
 func (r PictureReferenceBotResponse) Execute(telebot TeleBot) {
 	telebot.SendPhotoByID(r.pid, r.chatID)
+}
+
+/*************************** PictureContextBotResponse ***************************/
+type PictureContextBotResponse struct {
+	context *gg.Context
+	chatID  int64
+}
+
+func NewPictureContextBotResponse(context *gg.Context, chatID int64) *PictureContextBotResponse {
+	return &PictureContextBotResponse{context, chatID}
+}
+
+func (r PictureContextBotResponse) Execute(telebot TeleBot) {
+	telebot.SendPhotoByContext(r.context, r.chatID)
 }
 
 /*************************** PictureUploadBotResponse ***************************/

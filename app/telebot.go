@@ -16,6 +16,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/fogleman/gg"
 )
 
 // TeleBot talks to telegram and manages application state
@@ -280,13 +282,16 @@ func (telebot TeleBot) SendVideoByID(fileID string, chatID int64) error {
 	return err
 }
 
-func (telebot TeleBot) sendFile(path string, chatID int64) {
+func (telebot TeleBot) startForm(chatID int64) (*multipart.Writer, *bytes.Buffer) {
 	var b bytes.Buffer
-	var err error
 	w := multipart.NewWriter(&b)
-	var fw io.Writer
-
 	w.WriteField("chat_id", strconv.FormatInt(chatID, 10))
+	return w, &b
+}
+
+func (telebot TeleBot) sendFile(path string, chatID int64) {
+	multipartWriter, buffer := telebot.startForm(chatID)
+
 	file, err := os.Open(path)
 	if err != nil {
 		log.Println(err)
@@ -294,7 +299,8 @@ func (telebot TeleBot) sendFile(path string, chatID int64) {
 	}
 	defer file.Close()
 
-	if fw, err = w.CreateFormFile("document", "movie.mp4"); err != nil {
+	fw, err := multipartWriter.CreateFormFile("document", "movie.mp4")
+	if err != nil {
 		telebot.errorReport.Log(err.Error())
 	}
 
@@ -303,39 +309,64 @@ func (telebot TeleBot) sendFile(path string, chatID int64) {
 		log.Println(err)
 	}
 
-	w.CreateFormField("something")
+	multipartWriter.Close()
 
-	w.Close()
-
-	req, err := http.NewRequest("POST", telebot.url+"sendDocument", &b)
+	req, err := http.NewRequest("POST", telebot.url+"sendDocument", buffer)
 	if err != nil {
 		telebot.errorReport.Log(err.Error())
 	}
 
-	req.Header.Set("Content-Type", w.FormDataContentType())
+	req.Header.Set("Content-Type", multipartWriter.FormDataContentType())
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		log.Println(err)
 		telebot.errorReport.Log(err.Error())
-	}
 
-	bytes, err := ioutil.ReadAll(res.Body)
+		bytes, err := ioutil.ReadAll(res.Body)
+
+		if err != nil {
+			log.Println(err)
+			telebot.errorReport.Log(err.Error())
+		}
+		log.Println(string(bytes))
+	}
+}
+
+func (telebot TeleBot) SendPhotoByContext(context *gg.Context, chatID int64) {
+	multipartWriter, buffer := telebot.startForm(chatID)
+
+	var fw io.Writer
+
+	fw, err := multipartWriter.CreateFormFile("photo", "image.png")
 
 	if err != nil {
-		log.Println(err)
 		telebot.errorReport.Log(err.Error())
 	}
-	log.Println(string(bytes))
+
+	if err := context.EncodePNG(fw); err != nil {
+		telebot.errorReport.Log(err.Error())
+	}
+
+	multipartWriter.Close()
+
+	req, err := http.NewRequest("POST", telebot.url+"sendPhoto", buffer)
+	if err != nil {
+		telebot.errorReport.Log(err.Error())
+	}
+
+	req.Header.Set("Content-Type", multipartWriter.FormDataContentType())
+	client := &http.Client{}
+	_, err = client.Do(req)
+	if err != nil {
+		telebot.errorReport.Log(err.Error())
+	}
+
 }
 
 func (telebot TeleBot) sendImage(path string, chatID int64) {
-	var b bytes.Buffer
-	var err error
-	w := multipart.NewWriter(&b)
-	var fw io.Writer
+	multipartWriter, buffer := telebot.startForm(chatID)
 
-	w.WriteField("chat_id", strconv.FormatInt(chatID, 10))
 	file, err := os.Open(path)
 	if err != nil {
 		telebot.errorReport.Log(err.Error())
@@ -346,23 +377,23 @@ func (telebot TeleBot) sendImage(path string, chatID int64) {
 		telebot.errorReport.Log(err.Error())
 	}
 
-	if fw, err = w.CreateFormFile("photo", "image.png"); err != nil {
+	fw, err := multipartWriter.CreateFormFile("photo", "image.png")
+
+	if err != nil {
 		telebot.errorReport.Log(err.Error())
 	}
 	if err = png.Encode(fw, img); err != nil {
 		telebot.errorReport.Log(err.Error())
 	}
 
-	w.CreateFormField("something")
+	multipartWriter.Close()
 
-	w.Close()
-
-	req, err := http.NewRequest("POST", telebot.url+"sendPhoto", &b)
+	req, err := http.NewRequest("POST", telebot.url+"sendPhoto", buffer)
 	if err != nil {
 		telebot.errorReport.Log(err.Error())
 	}
 
-	req.Header.Set("Content-Type", w.FormDataContentType())
+	req.Header.Set("Content-Type", multipartWriter.FormDataContentType())
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {

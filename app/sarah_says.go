@@ -53,8 +53,6 @@ var sarahSaysCommand = BotCommand{
 			dc.DrawString(l, 60, 410+(float64(i)*fontSize))
 		}
 
-		dc.SavePNG("sarahout.png")
-
-		respChan <- *NewPictureUploadBotResponse("sarahout.png", update.Message.Chat.ID)
+		respChan <- *NewPictureContextBotResponse(dc, update.Message.Chat.ID)
 	},
 }

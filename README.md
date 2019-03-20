@@ -31,7 +31,7 @@ docker-compose up
 
 ### Database Schema
 
-If you really care to backfill your database open up an issue and I'll explain the process... If you just want to log future messages as they come in you'll just need to set up a MySQL database with this table
+If you really care to backfill your database open up an issue and I'll update the process in the readme... If you just want to log future messages as they come in you'll just need to set up a MySQL database with this table
 
 ```SQL
 CREATE TABLE `messages` (
