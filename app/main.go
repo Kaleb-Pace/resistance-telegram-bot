@@ -361,7 +361,8 @@ func getCommands(commandDb *sql.DB) []Command {
 		resistanceRuleThreeCommand,
 		sarahSaysCommand,
 		wastedCommand,
-		NewQueryCommand(commandDb),
+		NewSelectCommand(commandDb),
+		NewTallyCommand(commandDb),
 		epochCommand,
 		sunnyCommand,
 	}
