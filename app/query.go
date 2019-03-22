@@ -26,7 +26,7 @@ func NewTallyCommand(database *sql.DB) *QueryCommand {
 				}
 
 				result, err := telebot.masterDb.Query(
-					"SELECT COUNT(MessageID), FromUserName FROM messages WHERE Text LIKE ? AND ChatID = ? GROUP BY FromUserName",
+					"SELECT COUNT(MessageID) as c, FromUserName FROM messages WHERE Text LIKE ? AND ChatID = ? GROUP BY FromUserName order by c desc",
 					sqlRegex,
 					update.Message.Chat.ID,
 				)
@@ -51,7 +51,7 @@ func NewTallyCommand(database *sql.DB) *QueryCommand {
 				if returnMessage == "" {
 					respChan <- *NewTextBotResponse("Doesn't look like any messages text match that sql regex", update.Message.Chat.ID)
 				} else {
-					respChan <- *NewTextBotResponse(returnMessage, update.Message.Chat.ID)
+					respChan <- *NewTextBotResponse(fmt.Sprintf("<b>%s:</b>\n%s", sqlRegex, returnMessage), update.Message.Chat.ID)
 				}
 
 			},
