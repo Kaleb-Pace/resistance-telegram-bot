@@ -97,7 +97,7 @@ var repostCommand = BotCommand{
 		if poster != "" {
 			respChan <- *NewTextBotResponse(fmt.Sprintf("REPOST: %s has already posted this", poster), update.Message.Chat.ID)
 		} else {
-			path, err := bot.GetFile(photos[0].FileID, 2097152)
+			path, err := bot.DownloadFile(photos[0].FileID, 2097152)
 			if err != nil {
 				log.Println(err.Error())
 			}

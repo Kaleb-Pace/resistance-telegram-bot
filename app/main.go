@@ -180,13 +180,14 @@ func getCommands(commandDb *sql.DB) []Command {
 				if update.Message.ReplyToMessage.Photo != nil {
 					photos := *update.Message.ReplyToMessage.Photo
 					whatWasEdged = "photo"
-					go bot.GetFile(photos[0].FileID, 2097152)
+					go bot.DownloadFile(photos[len(photos)-1].FileID, 2097152)
+
 				}
 
 				if update.Message.ReplyToMessage.Sticker != nil {
 					whatWasEdged = "sticker"
 					sticker := *update.Message.ReplyToMessage.Sticker
-					go bot.GetFile(sticker.FileID, 2097152)
+					go bot.DownloadFile(sticker.FileID, 2097152)
 				}
 
 				if update.Message.ReplyToMessage.Document != nil {

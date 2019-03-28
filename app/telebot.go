@@ -177,51 +177,54 @@ func (telebot *TeleBot) GetUpdates() ([]Update, error) {
 	return updates.Result, nil
 }
 
-// GetFile Downloads a file using its file id and returns the filepath on the system
-func (telebot TeleBot) GetFile(fileID string, byteLimit int) (string, error) {
+func (telebot TeleBot) GetFile(fileID string, byteLimit int) (*http.Response, *GetFileResponseData, error) {
 	resp, err := http.Get(fmt.Sprintf("%sgetFile?file_id=%s", telebot.url, fileID))
 
 	log.Println("Begining download")
 
 	if err != nil {
 		log.Println("Error: " + err.Error())
-		return "", err
+		return nil, nil, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return nil, nil, err
 	}
-
-	log.Println(string(body))
 
 	var imageResponse GetFileResponse
 	err = json.Unmarshal([]byte(body), &imageResponse)
 	if err != nil {
 		log.Println("err: " + err.Error())
-		return "", err
+		return nil, nil, err
 	}
 
 	if imageResponse.Ok == false {
-		return "", errors.New("telegram resolved unsucessfully")
+		return nil, nil, errors.New("telegram resolved unsucessfully")
 	}
 
 	if imageResponse.Result.FileSize > byteLimit {
-		return "", fmt.Errorf("Filesize exceed limit: %d > %d", imageResponse.Result.FileSize, byteLimit)
+		return nil, nil, fmt.Errorf("Filesize exceed limit: %d > %d", imageResponse.Result.FileSize, byteLimit)
 	}
 
 	log.Println(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", telebot.key, imageResponse.Result.FilePath))
 
 	resp, err = http.Get(fmt.Sprintf("https://api.telegram.org/file/bot%s/%s", telebot.key, imageResponse.Result.FilePath))
+	return resp, &imageResponse.Result, err
+}
 
+// DownloadFile Downloads a file using its file id and returns the filepath on the system
+func (telebot TeleBot) DownloadFile(fileID string, byteLimit int) (string, error) {
+
+	resp, responseData, err := telebot.GetFile(fileID, byteLimit)
 	if err != nil {
 		return "", err
 	}
 
 	folder := "media/"
-	fileName := imageResponse.Result.FilePath
+	fileName := responseData.FilePath
 
-	splitResults := strings.Split(imageResponse.Result.FilePath, "/")
+	splitResults := strings.Split(responseData.FilePath, "/")
 
 	if len(splitResults) == 2 {
 		folder += splitResults[0]
