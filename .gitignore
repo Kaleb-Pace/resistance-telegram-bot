@@ -10,3 +10,5 @@ debug
 .vscode
 
 backfiller/result*
+backfiller/*.txt
+backfiller/*.csv

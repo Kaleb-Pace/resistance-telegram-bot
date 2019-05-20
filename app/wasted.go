@@ -146,6 +146,10 @@ var wastedCommand = BotCommand{
 	matcher:     messageContainsCommandMatcher("wasted"),
 	execute: func(bot TeleBot, update Update, respChan chan BotResponse) {
 
+		if update.Message.ReplyToMessage == nil {
+			return
+		}
+
 		var fileID string
 
 		if update.Message.ReplyToMessage.Document != nil {
@@ -198,7 +202,7 @@ var wastedCommand = BotCommand{
 			wasteContext(dc, 1, true, false)
 			respChan <- *NewPictureContextBotResponse(dc, update.Message.Chat.ID)
 		} else {
-			respChan <- *NewTextBotResponse("Please respond to a gif/pic ", update.Message.Chat.ID)
+			respChan <- *NewTextBotResponse("Please respond to a gif/pic/sticker/video", update.Message.Chat.ID)
 		}
 
 	},

@@ -157,8 +157,6 @@ func (m message) CSV(chatID int64) []string {
 		m.Username(),
 		m.ActualReplyTo(),
 		m.FormattedForwardedFrom(),
-		"\\N",
-		"\\N",
 		m.PhotoID(),
 		m.VideoID(),
 		m.DocumentID(),
@@ -181,7 +179,7 @@ func main() {
 		panic(err)
 	}
 
-	upToMessageID := 145781
+	upToMessageID := 200000 //145781
 	var chatToPullFrom int64 = 9771743476
 	var chatIDAlias int64 = -1001181808884
 
@@ -198,6 +196,21 @@ func main() {
 
 	writer := csv.NewWriter(outFile)
 	defer writer.Flush()
+
+	writer.Write([]string{
+		"messageID",
+		"chatID",
+		"date",
+		"userID",
+		"username",
+		"ReplyTo",
+		"ForwardedFrom",
+		"photo",
+		"video",
+		"document",
+		"sticker",
+		"text",
+	})
 
 	for _, chat := range results.Chats.List {
 		// log.Printf("[%d] %s: %d messages", chat.ID, chat.Name, len(chat.Messagess))
