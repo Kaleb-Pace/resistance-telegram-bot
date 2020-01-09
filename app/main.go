@@ -366,6 +366,7 @@ func getCommands(commandDb *sql.DB) []Command {
 		NewTallyCommand(commandDb),
 		epochCommand,
 		sunnyCommand,
+		threatCommand,
 	}
 
 }
