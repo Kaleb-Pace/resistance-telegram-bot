@@ -352,7 +352,6 @@ func getCommands(commandDb *sql.DB) []Command {
 		repostCommand,
 		mockCommand,
 		yeetCommand,
-		hmCommand,
 		defineCommand,
 		userIDCommand,
 		messageIDCommand,
